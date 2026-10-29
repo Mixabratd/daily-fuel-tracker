@@ -8,3 +8,10 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Architecture rules
+- App state (food entries, profile, targets, settings) lives in `src/lib/store.ts`, a localStorage-backed `useSyncExternalStore` store; why: foundation phase is device-only, and swapping to a backend later only touches this module.
+- Nutrition math (BMR/TDEE/BMI/macro split, unit conversion) stays pure in `src/lib/nutrition.ts` with tests in `nutrition.test.ts`; why: rules users care about must stay testable without React.
+- Data is always stored in metric; imperial is display/input conversion only; why: one canonical unit avoids drift.
+- The mobile shell (max-w-md column + fixed bottom tab bar) lives in `src/routes/__root.tsx`; each tab is its own route file; why: tabs get real URLs and shared chrome.
+- `FoodEntry.barcode` is reserved for the upcoming camera barcode scanner.
