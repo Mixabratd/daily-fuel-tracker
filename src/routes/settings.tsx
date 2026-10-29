@@ -83,7 +83,7 @@ function SettingsPage() {
       </Group>
 
       <Group title="Data">
-        <Row icon={Trash2} label="Clear food log" hint={`${entries.length} entries saved on this device`}>
+        <Row icon={Trash2} label="Clear food log" hint={`${entries.length} ${entries.length === 1 ? "entry" : "entries"} saved on this device`}>
           <Confirm
             title="Clear your food log?"
             description="All logged food will be removed. Your targets stay as they are."

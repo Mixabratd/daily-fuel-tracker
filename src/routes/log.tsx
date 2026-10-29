@@ -64,7 +64,7 @@ function LogPage() {
       </div>
 
       <div className="mt-4 grid grid-cols-4 gap-2 rounded-2xl bg-ink p-4 text-center text-ink-foreground">
-        <Stat label="kcal" value={totals.calories} sub={`/ ${targets.calories}`} />
+        <Stat label={`of ${targets.calories} kcal`} value={totals.calories} sub="" />
         <Stat label="protein" value={totals.protein} sub="g" macro="protein" />
         <Stat label="carbs" value={totals.carbs} sub="g" macro="carbs" />
         <Stat label="fat" value={totals.fat} sub="g" macro="fat" />
