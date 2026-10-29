@@ -22,9 +22,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/settings/")({
   head: () => ({
     meta: [
-      { title: "Settings — Forkcast" },
+      { title: "Settings — Fit Plate" },
       { name: "description", content: "Your targets, calculator, units, scanner and data settings." },
-      { property: "og:title", content: "Settings — Forkcast" },
+      { property: "og:title", content: "Settings — Fit Plate" },
       { property: "og:description", content: "Your targets, calculator, units, scanner and data settings." },
     ],
   }),
@@ -123,7 +123,7 @@ function SettingsPage() {
         </Row>
       </Group>
 
-      <p className="pt-2 text-center text-xs text-muted-foreground">Forkcast · v0.1 · Data is stored on this device</p>
+      <p className="pt-2 text-center text-xs text-muted-foreground">Fit Plate · v0.1 · Data is stored on this device</p>
     </div>
   );
 }

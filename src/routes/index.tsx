@@ -11,9 +11,9 @@ import { todayKey, useAppState } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Today — Forkcast" },
+      { title: "Today — Fit Plate" },
       { name: "description", content: "Your calories and macros for today at a glance." },
-      { property: "og:title", content: "Today — Forkcast" },
+      { property: "og:title", content: "Today — Fit Plate" },
       { property: "og:description", content: "Your calories and macros for today at a glance." },
     ],
   }),

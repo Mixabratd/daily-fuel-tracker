@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Forkcast design system — dark mode: midnight navy base, dark blue ink panels, lime accent.
+ * Fit Plate design system — dark mode: midnight navy base, dark blue ink panels, lime accent.
  * Macro colors: protein (coral), carbs (amber), fat (lagoon blue).
  * All colors use oklch.
  */
@@ -172,4 +172,19 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility fade-x {
+  mask-image: linear-gradient(to right, transparent, black 18%, black 82%, transparent);
+}
+
+@utility fade-y {
+  mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
 }

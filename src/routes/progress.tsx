@@ -14,9 +14,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/progress")({
   head: () => ({
     meta: [
-      { title: "Progress — Forkcast" },
+      { title: "Progress — Fit Plate" },
       { name: "description", content: "Your 7-day average calories and weight change since you started." },
-      { property: "og:title", content: "Progress — Forkcast" },
+      { property: "og:title", content: "Progress — Fit Plate" },
       { property: "og:description", content: "Your 7-day average calories and weight change since you started." },
     ],
   }),

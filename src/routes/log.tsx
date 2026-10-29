@@ -12,9 +12,9 @@ import { actions, dateKey, todayKey, useAppState } from "@/lib/store";
 export const Route = createFileRoute("/log")({
   head: () => ({
     meta: [
-      { title: "Food log — Forkcast" },
+      { title: "Food log — Fit Plate" },
       { name: "description", content: "Log breakfast, lunch, dinner and snacks with calories and macros." },
-      { property: "og:title", content: "Food log — Forkcast" },
+      { property: "og:title", content: "Food log — Fit Plate" },
       { property: "og:description", content: "Log breakfast, lunch, dinner and snacks with calories and macros." },
     ],
   }),
