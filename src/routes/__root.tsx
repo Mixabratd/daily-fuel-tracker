@@ -4,6 +4,9 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
+  useNavigate,
+  useHydrated,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -14,6 +17,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BottomNav } from "@/components/app/BottomNav";
 import { Toaster } from "@/components/ui/sonner";
+import { getAppState, useAppState } from "@/lib/store";
 
 function NotFoundComponent() {
   return (
@@ -121,14 +125,35 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const hydrated = useHydrated();
+  const { onboarding } = useAppState();
+  const inQuiz = pathname.startsWith("/onboarding");
+
+  // First launch (or after a reset): send people through the setup quiz.
+  // Reads the live store, not the hydration snapshot, so returning users aren't bounced.
+  useEffect(() => {
+    if (!inQuiz && !getAppState().onboarding.completed) {
+      void navigate({ to: "/onboarding", replace: true });
+    }
+  }, [inQuiz, onboarding.completed, navigate]);
+
+  const waitingForQuiz = hydrated && !inQuiz && !onboarding.completed;
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="mx-auto min-h-screen w-full max-w-md px-5 pb-32">
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      {inQuiz ? (
         <Outlet />
-      </div>
-      <BottomNav />
+      ) : (
+        <>
+          <div className="mx-auto min-h-screen w-full max-w-md px-5 pb-32">
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            {waitingForQuiz ? null : <Outlet />}
+          </div>
+          {!waitingForQuiz && <BottomNav />}
+        </>
+      )}
       <Toaster position="top-center" />
     </QueryClientProvider>
   );
