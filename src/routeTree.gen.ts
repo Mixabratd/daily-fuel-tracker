@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LogRouteImport } from './routes/log'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsTargetsRouteImport } from './routes/settings/targets'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const LogRoute = LogRouteImport.update({
   id: '/log',
   path: '/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProgressRoute = ProgressRouteImport.update({
@@ -44,6 +50,7 @@ const SettingsTargetsRoute = SettingsTargetsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/log': typeof LogRoute
+  '/onboarding': typeof OnboardingRoute
   '/progress': typeof ProgressRoute
   '/settings/targets': typeof SettingsTargetsRoute
   '/settings/': typeof SettingsIndexRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/log': typeof LogRoute
+  '/onboarding': typeof OnboardingRoute
   '/progress': typeof ProgressRoute
   '/settings/targets': typeof SettingsTargetsRoute
   '/settings': typeof SettingsIndexRoute
@@ -59,22 +67,42 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/log': typeof LogRoute
+  '/onboarding': typeof OnboardingRoute
   '/progress': typeof ProgressRoute
   '/settings/targets': typeof SettingsTargetsRoute
   '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/log' | '/progress' | '/settings/targets' | '/settings/'
+  fullPaths:
+    | '/'
+    | '/log'
+    | '/onboarding'
+    | '/progress'
+    | '/settings/targets'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/log' | '/progress' | '/settings/targets' | '/settings'
+  to:
+    | '/'
+    | '/log'
+    | '/onboarding'
+    | '/progress'
+    | '/settings/targets'
+    | '/settings'
   id:
-    '__root__' | '/' | '/log' | '/progress' | '/settings/targets' | '/settings/'
+    | '__root__'
+    | '/'
+    | '/log'
+    | '/onboarding'
+    | '/progress'
+    | '/settings/targets'
+    | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LogRoute: typeof LogRoute
+  OnboardingRoute: typeof OnboardingRoute
   ProgressRoute: typeof ProgressRoute
   SettingsTargetsRoute: typeof SettingsTargetsRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
@@ -94,6 +122,13 @@ declare module '@tanstack/react-router' {
       path: '/log'
       fullPath: '/log'
       preLoaderRoute: typeof LogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/progress': {
@@ -123,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LogRoute: LogRoute,
+  OnboardingRoute: OnboardingRoute,
   ProgressRoute: ProgressRoute,
   SettingsTargetsRoute: SettingsTargetsRoute,
   SettingsIndexRoute: SettingsIndexRoute,

@@ -37,9 +37,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/settings/targets")({
   head: () => ({
     meta: [
-      { title: "Targets & calculator — Forkcast" },
+      { title: "Targets & calculator — Fit Plate" },
       { name: "description", content: "Set calorie and macro targets and calculate your BMR, TDEE and BMI." },
-      { property: "og:title", content: "Targets & calculator — Forkcast" },
+      { property: "og:title", content: "Targets & calculator — Fit Plate" },
       { property: "og:description", content: "Set calorie and macro targets and calculate your BMR, TDEE and BMI." },
     ],
   }),

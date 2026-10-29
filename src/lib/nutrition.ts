@@ -12,6 +12,10 @@ export interface Profile {
   weightKg: number;
   activity: ActivityLevel;
   goal: Goal;
+  /** Chosen weekly change in kg (set in the setup quiz). Without it the fixed GOALS delta applies. */
+  paceKg?: number | undefined;
+  /** Goal weight from the setup quiz. */
+  targetWeightKg?: number | undefined;
 }
 
 export interface Macros {
@@ -58,9 +62,57 @@ export function calcTdee(p: Profile): number {
   return Math.round(calcBmr(p) * ACTIVITY_LEVELS[p.activity].factor);
 }
 
+/** Energy in one kg of body weight, used to turn a weekly pace into a daily calorie change. */
+export const KCAL_PER_KG = 7700;
+
+/** Allowed weekly pace (kg) per goal, with the "recommended" band shown in the quiz. */
+export const PACE_RANGES: Record<Exclude<Goal, "maintain">, {
+  min: number;
+  max: number;
+  default: number;
+  recMin: number;
+  recMax: number;
+}> = {
+  lose: { min: 0.1, max: 1.5, default: 0.5, recMin: 0.4, recMax: 0.8 },
+  gain: { min: 0.1, max: 1.0, default: 0.3, recMin: 0.2, recMax: 0.5 },
+};
+
+export type PaceLabel = "slow" | "recommended" | "fast";
+
+export function paceLabel(goal: Exclude<Goal, "maintain">, paceKg: number): PaceLabel {
+  const r = PACE_RANGES[goal];
+  if (paceKg < r.recMin) return "slow";
+  if (paceKg > r.recMax) return "fast";
+  return "recommended";
+}
+
+/** Daily calorie change for the goal: from the weekly pace when set, otherwise the fixed GOALS delta. */
+export function goalDelta(p: Pick<Profile, "goal" | "paceKg">): number {
+  if (p.goal === "maintain") return 0;
+  if (p.paceKg && p.paceKg > 0) {
+    const daily = Math.round((p.paceKg * KCAL_PER_KG) / 7);
+    return p.goal === "lose" ? -daily : daily;
+  }
+  return GOALS[p.goal].delta;
+}
+
 /** Calorie target for the chosen goal, never below MIN_CALORIES. */
 export function calcGoalCalories(p: Profile): number {
-  return Math.max(MIN_CALORIES, calcTdee(p) + GOALS[p.goal].delta);
+  return Math.max(MIN_CALORIES, calcTdee(p) + goalDelta(p));
+}
+
+/** Whole weeks needed to move from current to target weight at the given weekly pace. */
+export function weeksToGoal(currentKg: number, targetKg: number, paceKg: number): number {
+  if (paceKg <= 0) return 0;
+  return Math.ceil(Math.round(Math.abs(currentKg - targetKg) * 10) / 10 / paceKg);
+}
+
+/** Age in full years on `today`. */
+export function ageOn(birth: Date, today: Date): number {
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+  return age;
 }
 
 /** Grams of each macro for a calorie budget and split. */
