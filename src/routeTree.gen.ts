@@ -11,8 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LogRouteImport } from './routes/log'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as TargetsRouteImport } from './routes/targets'
+import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
+import { Route as SettingsTargetsRouteImport } from './routes/settings/targets'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -24,49 +25,59 @@ const LogRoute = LogRouteImport.update({
   path: '/log',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
+const ProgressRoute = ProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TargetsRoute = TargetsRouteImport.update({
-  id: '/targets',
-  path: '/targets',
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsTargetsRoute = SettingsTargetsRouteImport.update({
+  id: '/settings/targets',
+  path: '/settings/targets',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/log': typeof LogRoute
-  '/settings': typeof SettingsRoute
-  '/targets': typeof TargetsRoute
+  '/progress': typeof ProgressRoute
+  '/settings/targets': typeof SettingsTargetsRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/log': typeof LogRoute
-  '/settings': typeof SettingsRoute
-  '/targets': typeof TargetsRoute
+  '/progress': typeof ProgressRoute
+  '/settings/targets': typeof SettingsTargetsRoute
+  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/log': typeof LogRoute
-  '/settings': typeof SettingsRoute
-  '/targets': typeof TargetsRoute
+  '/progress': typeof ProgressRoute
+  '/settings/targets': typeof SettingsTargetsRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/log' | '/settings' | '/targets'
+  fullPaths: '/' | '/log' | '/progress' | '/settings/targets' | '/settings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/log' | '/settings' | '/targets'
-  id: '__root__' | '/' | '/log' | '/settings' | '/targets'
+  to: '/' | '/log' | '/progress' | '/settings/targets' | '/settings'
+  id:
+    '__root__' | '/' | '/log' | '/progress' | '/settings/targets' | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LogRoute: typeof LogRoute
-  SettingsRoute: typeof SettingsRoute
-  TargetsRoute: typeof TargetsRoute
+  ProgressRoute: typeof ProgressRoute
+  SettingsTargetsRoute: typeof SettingsTargetsRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -85,18 +96,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LogRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
+    '/progress': {
+      id: '/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof ProgressRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/targets': {
-      id: '/targets'
-      path: '/targets'
-      fullPath: '/targets'
-      preLoaderRoute: typeof TargetsRouteImport
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings/targets': {
+      id: '/settings/targets'
+      path: '/settings/targets'
+      fullPath: '/settings/targets'
+      preLoaderRoute: typeof SettingsTargetsRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -105,8 +123,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LogRoute: LogRoute,
-  SettingsRoute: SettingsRoute,
-  TargetsRoute: TargetsRoute,
+  ProgressRoute: ProgressRoute,
+  SettingsTargetsRoute: SettingsTargetsRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
