@@ -57,7 +57,13 @@ function TargetsPage() {
 
   return (
     <div className="rise-in">
-      <PageHeader eyebrow="Plan" title="Targets" />
+      <Link
+        to="/settings"
+        className="-mb-4 inline-flex items-center gap-1 pt-6 text-sm font-medium text-primary"
+      >
+        <ChevronLeft className="size-4" /> Settings
+      </Link>
+      <PageHeader eyebrow="Settings" title="Targets" />
 
       <TargetsEditor targets={targets} />
 
