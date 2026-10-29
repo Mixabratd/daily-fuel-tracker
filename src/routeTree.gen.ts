@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LogRouteImport } from './routes/log'
+import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsTargetsRouteImport } from './routes/settings/targets'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const LogRoute = LogRouteImport.update({
   id: '/log',
   path: '/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgressRoute = ProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
@@ -38,12 +44,14 @@ const SettingsTargetsRoute = SettingsTargetsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/log': typeof LogRoute
+  '/progress': typeof ProgressRoute
   '/settings/targets': typeof SettingsTargetsRoute
   '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/log': typeof LogRoute
+  '/progress': typeof ProgressRoute
   '/settings/targets': typeof SettingsTargetsRoute
   '/settings': typeof SettingsIndexRoute
 }
@@ -51,20 +59,23 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/log': typeof LogRoute
+  '/progress': typeof ProgressRoute
   '/settings/targets': typeof SettingsTargetsRoute
   '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/log' | '/settings/targets' | '/settings/'
+  fullPaths: '/' | '/log' | '/progress' | '/settings/targets' | '/settings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/log' | '/settings/targets' | '/settings'
-  id: '__root__' | '/' | '/log' | '/settings/targets' | '/settings/'
+  to: '/' | '/log' | '/progress' | '/settings/targets' | '/settings'
+  id:
+    '__root__' | '/' | '/log' | '/progress' | '/settings/targets' | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LogRoute: typeof LogRoute
+  ProgressRoute: typeof ProgressRoute
   SettingsTargetsRoute: typeof SettingsTargetsRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
 }
@@ -83,6 +94,13 @@ declare module '@tanstack/react-router' {
       path: '/log'
       fullPath: '/log'
       preLoaderRoute: typeof LogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/progress': {
+      id: '/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof ProgressRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings/': {
@@ -105,6 +123,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LogRoute: LogRoute,
+  ProgressRoute: ProgressRoute,
   SettingsTargetsRoute: SettingsTargetsRoute,
   SettingsIndexRoute: SettingsIndexRoute,
 }
