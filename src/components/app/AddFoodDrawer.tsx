@@ -164,7 +164,7 @@ export function AddFoodDrawer({
             <div className="grid grid-cols-3 gap-3">
               {(["protein", "carbs", "fat"] as const).map((k) => (
                 <div key={k} className="space-y-1.5">
-                  <Label htmlFor={`food-${k}`} className="flex items-center gap-1.5 capitalize">
+                  <Label htmlFor={`food-${k}`} className="flex items-center gap-1.5">
                     <MacroDot macro={k} /> {k[0].toUpperCase() + k.slice(1)} (g)
                   </Label>
                   <Input id={`food-${k}`} type="number" inputMode="decimal" placeholder="0" value={form[k]} onChange={set(k)} className="h-11 rounded-xl bg-card tabular" />

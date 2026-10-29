@@ -8,8 +8,8 @@ export interface FoodEntry extends Macros {
   date: string; // yyyy-MM-dd (local)
   meal: MealType;
   name: string;
-  serving?: string;
-  barcode?: string; // reserved for the barcode scanner
+  serving?: string | undefined;
+  barcode?: string | undefined; // reserved for the barcode scanner
   createdAt: number;
 }
 
