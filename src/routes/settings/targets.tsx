@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Calculator, Check } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Calculator, Check, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/PageHeader";
 import { MacroDot } from "@/components/app/MacroBar";
@@ -34,7 +34,7 @@ import {
 import { actions, useAppState } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/targets")({
+export const Route = createFileRoute("/settings/targets")({
   head: () => ({
     meta: [
       { title: "Targets & calculator — Forkcast" },
@@ -134,7 +134,7 @@ function TargetsPage() {
                 className={cn(
                   "rounded-xl border px-2 py-2.5 text-xs font-semibold transition-colors",
                   profile.goal === g
-                    ? "border-primary bg-primary text-primary-foreground"
+                    ? "border-ink bg-ink text-ink-foreground"
                     : "border-border bg-background text-foreground",
                 )}
               >

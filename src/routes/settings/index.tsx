@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Camera, Ruler, Trash2, RotateCcw, User } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Camera, ChevronRight, Ruler, Target, Trash2, RotateCcw, User } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -19,26 +19,38 @@ import {
 import { actions, useAppState } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/settings")({
+export const Route = createFileRoute("/settings/")({
   head: () => ({
     meta: [
       { title: "Settings — Forkcast" },
-      { name: "description", content: "Your name, units, scanner and data settings." },
+      { name: "description", content: "Your targets, calculator, units, scanner and data settings." },
       { property: "og:title", content: "Settings — Forkcast" },
-      { property: "og:description", content: "Your name, units, scanner and data settings." },
+      { property: "og:description", content: "Your targets, calculator, units, scanner and data settings." },
     ],
   }),
   component: SettingsPage,
 });
 
 function SettingsPage() {
-  const { settings, entries } = useAppState();
+  const { settings, entries, weights, targets } = useAppState();
   const [name, setName] = useState(settings.name);
   useEffect(() => setName(settings.name), [settings.name]);
 
   return (
     <div className="rise-in space-y-6">
       <PageHeader eyebrow="Preferences" title="Settings" />
+
+      <Group title="Plan">
+        <Link to="/settings/targets" className="block transition-colors hover:bg-secondary/50">
+          <Row
+            icon={Target}
+            label="Targets & calculator"
+            hint={`${targets.calories.toLocaleString()} kcal · ${targets.protein}P ${targets.carbs}C ${targets.fat}F`}
+          >
+            <ChevronRight className="size-5 text-muted-foreground" />
+          </Row>
+        </Link>
+      </Group>
 
       <Group title="Profile">
         <Row icon={User} label="Your name">
@@ -86,7 +98,7 @@ function SettingsPage() {
         <Row icon={Trash2} label="Clear food log" hint={`${entries.length} ${entries.length === 1 ? "entry" : "entries"} saved on this device`}>
           <Confirm
             title="Clear your food log?"
-            description="All logged food will be removed. Your targets stay as they are."
+            description="All logged food will be removed. Your targets and weigh-ins stay as they are."
             confirmLabel="Clear log"
             onConfirm={() => {
               actions.clearEntries();
@@ -96,7 +108,7 @@ function SettingsPage() {
             <Button variant="soft" size="sm" className="rounded-lg">Clear</Button>
           </Confirm>
         </Row>
-        <Row icon={RotateCcw} label="Reset everything" hint="Food log, targets and preferences">
+        <Row icon={RotateCcw} label="Reset everything" hint={`Food log, ${weights.length} weigh-ins, targets and preferences`}>
           <Confirm
             title="Reset the whole app?"
             description="This removes everything and starts fresh. It can't be undone."
