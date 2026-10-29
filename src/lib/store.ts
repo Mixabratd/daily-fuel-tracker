@@ -23,6 +23,15 @@ export interface WeightEntry extends WeighIn {
   id: string;
 }
 
+/** Answers from the first-run setup quiz that aren't part of the calorie maths. */
+export interface OnboardingState {
+  completed: boolean;
+  birthDate?: string | undefined; // yyyy-MM-dd
+  diet?: string | undefined;
+  obstacles: string[];
+  aims: string[];
+}
+
 export interface AppState {
   version: 1;
   entries: FoodEntry[];
@@ -30,6 +39,7 @@ export interface AppState {
   profile: Profile;
   targets: Macros;
   settings: Settings;
+  onboarding: OnboardingState;
 }
 
 const STORAGE_KEY = "forkcast:v1";
@@ -50,6 +60,7 @@ export const DEFAULT_STATE: AppState = {
   profile: defaultProfile,
   targets: macrosFromCalories(calcGoalCalories(defaultProfile)),
   settings: { name: "", units: "metric" },
+  onboarding: { completed: false, obstacles: [], aims: [] },
 };
 
 let state: AppState = DEFAULT_STATE;
@@ -69,6 +80,7 @@ function load() {
         profile: { ...DEFAULT_STATE.profile, ...parsed.profile },
         targets: { ...DEFAULT_STATE.targets, ...parsed.targets },
         settings: { ...DEFAULT_STATE.settings, ...parsed.settings },
+        onboarding: { ...DEFAULT_STATE.onboarding, ...parsed.onboarding },
       };
     }
   } catch {
@@ -100,6 +112,11 @@ function getSnapshot() {
 // Server render + first hydration pass use defaults; the client then swaps in saved data.
 function getServerSnapshot() {
   return DEFAULT_STATE;
+}
+
+/** Current saved state, for effects that must not rely on the hydration snapshot. */
+export function getAppState(): AppState {
+  return getSnapshot();
 }
 
 export function useAppState(): AppState {
@@ -149,6 +166,29 @@ export const actions = {
   },
   updateSettings(patch: Partial<Settings>) {
     setState((s) => ({ ...s, settings: { ...s.settings, ...patch } }));
+  },
+  /** Finish the setup quiz: save the profile, set matching targets and record the starting weigh-in. */
+  completeOnboarding(input: {
+    profile: Profile;
+    name: string;
+    units: Settings["units"];
+    answers: Omit<OnboardingState, "completed">;
+  }) {
+    setState((s) => {
+      const date = todayKey();
+      const weights = sortWeighIns([
+        ...s.weights.filter((w) => w.date !== date),
+        { id: uid(), date, kg: input.profile.weightKg, createdAt: Date.now() },
+      ]);
+      return {
+        ...s,
+        profile: input.profile,
+        targets: macrosFromCalories(calcGoalCalories(input.profile)),
+        settings: { ...s.settings, name: input.name, units: input.units },
+        onboarding: { ...input.answers, completed: true },
+        weights,
+      };
+    });
   },
   clearEntries() {
     setState((s) => ({ ...s, entries: [] }));
