@@ -2,6 +2,7 @@ import { useSyncExternalStore } from "react";
 import { format } from "date-fns";
 import type { Macros, MealType, Profile } from "./nutrition";
 import { calcGoalCalories, macrosFromCalories } from "./nutrition";
+import { sortWeighIns, type WeighIn } from "./progress";
 
 export interface FoodEntry extends Macros {
   id: string;
@@ -18,9 +19,14 @@ export interface Settings {
   units: "metric" | "imperial";
 }
 
+export interface WeightEntry extends WeighIn {
+  id: string;
+}
+
 export interface AppState {
   version: 1;
   entries: FoodEntry[];
+  weights: WeightEntry[];
   profile: Profile;
   targets: Macros;
   settings: Settings;
@@ -40,6 +46,7 @@ const defaultProfile: Profile = {
 export const DEFAULT_STATE: AppState = {
   version: 1,
   entries: [],
+  weights: [],
   profile: defaultProfile,
   targets: macrosFromCalories(calcGoalCalories(defaultProfile)),
   settings: { name: "", units: "metric" },
@@ -116,6 +123,23 @@ export const actions = {
   },
   removeEntry(id: string) {
     setState((s) => ({ ...s, entries: s.entries.filter((e) => e.id !== id) }));
+  },
+  /** One weigh-in per day (re-logging replaces it); the latest also becomes the profile weight. */
+  logWeight(kg: number, date: string) {
+    setState((s) => {
+      const weights = sortWeighIns([
+        ...s.weights.filter((w) => w.date !== date),
+        { id: uid(), date, kg, createdAt: Date.now() },
+      ]);
+      return { ...s, weights, profile: { ...s.profile, weightKg: weights[weights.length - 1]!.kg } };
+    });
+  },
+  removeWeight(id: string) {
+    setState((s) => {
+      const weights = s.weights.filter((w) => w.id !== id);
+      const latest = weights[weights.length - 1];
+      return { ...s, weights, profile: latest ? { ...s.profile, weightKg: latest.kg } : s.profile };
+    });
   },
   updateProfile(patch: Partial<Profile>) {
     setState((s) => ({ ...s, profile: { ...s.profile, ...patch } }));
