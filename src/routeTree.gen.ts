@@ -9,121 +9,109 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as LogRouteImport } from './routes/log'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as ProgressRouteImport } from './routes/progress'
-import { Route as SettingsIndexRouteImport } from './routes/settings/index'
-import { Route as SettingsTargetsRouteImport } from './routes/settings/targets'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedLogRouteImport } from './routes/_authenticated/log'
+import { Route as AuthenticatedProgressRouteImport } from './routes/_authenticated/progress'
+import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedSettingsTargetsRouteImport } from './routes/_authenticated/settings/targets'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LogRoute = LogRouteImport.update({
-  id: '/log',
-  path: '/log',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProgressRoute = ProgressRouteImport.update({
-  id: '/progress',
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/_authenticated/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedLogRoute = AuthenticatedLogRouteImport.update({
+  id: '/_authenticated/log',
+  path: '/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedProgressRoute = AuthenticatedProgressRouteImport.update({
+  id: '/_authenticated/progress',
   path: '/progress',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsIndexRoute = SettingsIndexRouteImport.update({
-  id: '/settings/',
-  path: '/settings/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsTargetsRoute = SettingsTargetsRouteImport.update({
-  id: '/settings/targets',
-  path: '/settings/targets',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const AuthenticatedSettingsIndexRoute =
+  AuthenticatedSettingsIndexRouteImport.update({
+    id: '/_authenticated/settings/',
+    path: '/settings/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedSettingsTargetsRoute =
+  AuthenticatedSettingsTargetsRouteImport.update({
+    id: '/_authenticated/settings/targets',
+    path: '/settings/targets',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/log': typeof LogRoute
   '/onboarding': typeof OnboardingRoute
-  '/progress': typeof ProgressRoute
-  '/settings/targets': typeof SettingsTargetsRoute
-  '/settings/': typeof SettingsIndexRoute
+  '/log': typeof AuthenticatedLogRoute
+  '/progress': typeof AuthenticatedProgressRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/settings/targets': typeof AuthenticatedSettingsTargetsRoute
+  '/settings/': typeof AuthenticatedSettingsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/log': typeof LogRoute
   '/onboarding': typeof OnboardingRoute
-  '/progress': typeof ProgressRoute
-  '/settings/targets': typeof SettingsTargetsRoute
-  '/settings': typeof SettingsIndexRoute
+  '/log': typeof AuthenticatedLogRoute
+  '/progress': typeof AuthenticatedProgressRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/settings/targets': typeof AuthenticatedSettingsTargetsRoute
+  '/settings': typeof AuthenticatedSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/log': typeof LogRoute
   '/onboarding': typeof OnboardingRoute
-  '/progress': typeof ProgressRoute
-  '/settings/targets': typeof SettingsTargetsRoute
-  '/settings/': typeof SettingsIndexRoute
+  '/_authenticated/log': typeof AuthenticatedLogRoute
+  '/_authenticated/progress': typeof AuthenticatedProgressRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/settings/targets': typeof AuthenticatedSettingsTargetsRoute
+  '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/log'
     | '/onboarding'
+    | '/log'
     | '/progress'
+    | '/'
     | '/settings/targets'
     | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
-    | '/log'
     | '/onboarding'
+    | '/log'
     | '/progress'
+    | '/'
     | '/settings/targets'
     | '/settings'
   id:
     | '__root__'
-    | '/'
-    | '/log'
     | '/onboarding'
-    | '/progress'
-    | '/settings/targets'
-    | '/settings/'
+    | '/_authenticated/log'
+    | '/_authenticated/progress'
+    | '/_authenticated/'
+    | '/_authenticated/settings/targets'
+    | '/_authenticated/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  LogRoute: typeof LogRoute
   OnboardingRoute: typeof OnboardingRoute
-  ProgressRoute: typeof ProgressRoute
-  SettingsTargetsRoute: typeof SettingsTargetsRoute
-  SettingsIndexRoute: typeof SettingsIndexRoute
+  AuthenticatedLogRoute: typeof AuthenticatedLogRoute
+  AuthenticatedProgressRoute: typeof AuthenticatedProgressRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedSettingsTargetsRoute: typeof AuthenticatedSettingsTargetsRoute
+  AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/log': {
-      id: '/log'
-      path: '/log'
-      fullPath: '/log'
-      preLoaderRoute: typeof LogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
@@ -131,37 +119,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/progress': {
-      id: '/progress'
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/log': {
+      id: '/_authenticated/log'
+      path: '/log'
+      fullPath: '/log'
+      preLoaderRoute: typeof AuthenticatedLogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/progress': {
+      id: '/_authenticated/progress'
       path: '/progress'
       fullPath: '/progress'
-      preLoaderRoute: typeof ProgressRouteImport
+      preLoaderRoute: typeof AuthenticatedProgressRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings/': {
-      id: '/settings/'
+    '/_authenticated/settings/': {
+      id: '/_authenticated/settings/'
       path: '/settings'
       fullPath: '/settings/'
-      preLoaderRoute: typeof SettingsIndexRouteImport
+      preLoaderRoute: typeof AuthenticatedSettingsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings/targets': {
-      id: '/settings/targets'
+    '/_authenticated/settings/targets': {
+      id: '/_authenticated/settings/targets'
       path: '/settings/targets'
       fullPath: '/settings/targets'
-      preLoaderRoute: typeof SettingsTargetsRouteImport
+      preLoaderRoute: typeof AuthenticatedSettingsTargetsRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  LogRoute: LogRoute,
   OnboardingRoute: OnboardingRoute,
-  ProgressRoute: ProgressRoute,
-  SettingsTargetsRoute: SettingsTargetsRoute,
-  SettingsIndexRoute: SettingsIndexRoute,
+  AuthenticatedLogRoute: AuthenticatedLogRoute,
+  AuthenticatedProgressRoute: AuthenticatedProgressRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedSettingsTargetsRoute: AuthenticatedSettingsTargetsRoute,
+  AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

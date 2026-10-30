@@ -11,7 +11,7 @@ import { averageCalories, dailyCalories, lastNDays, weightProgress } from "@/lib
 import { actions, todayKey, useAppState, type WeightEntry } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/progress")({
+export const Route = createFileRoute("/_authenticated/progress")({
   head: () => ({
     meta: [
       { title: "Progress — Fit Plate" },

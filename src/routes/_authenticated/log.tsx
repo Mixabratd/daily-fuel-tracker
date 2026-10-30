@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { MEALS, sumMacros } from "@/lib/nutrition";
 import { actions, dateKey, todayKey, useAppState } from "@/lib/store";
 
-export const Route = createFileRoute("/log")({
+export const Route = createFileRoute("/_authenticated/log")({
   head: () => ({
     meta: [
       { title: "Food log — Fit Plate" },
