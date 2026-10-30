@@ -3,7 +3,7 @@
 export type Sex = "male" | "female";
 export type ActivityLevel = "sedentary" | "light" | "moderate" | "active" | "very_active";
 export type Goal = "lose" | "maintain" | "gain";
-export type MealType = "breakfast" | "lunch" | "dinner" | "snack";
+export type MealType = "breakfast" | "lunch" | "dinner" | "snacks";
 
 export interface Profile {
   sex: Sex;
@@ -43,7 +43,7 @@ export const MEALS: { id: MealType; label: string }[] = [
   { id: "breakfast", label: "Breakfast" },
   { id: "lunch", label: "Lunch" },
   { id: "dinner", label: "Dinner" },
-  { id: "snack", label: "Snacks" },
+  { id: "snacks", label: "Snacks" },
 ];
 
 /** Default macro split (share of calories). */
@@ -137,6 +137,27 @@ export function bmiCategory(bmi: number): string {
   if (bmi < 25) return "Healthy";
   if (bmi < 30) return "Overweight";
   return "Obese";
+}
+
+/** Nutrition per 100 g of a food. */
+export interface Per100 {
+  kcal: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
+const round1 = (n: number) => Math.round(n * 10) / 10;
+
+/** Totals for an amount in grams, from per-100 g values, rounded to 0.1. */
+export function totalsForGrams(per100: Per100, grams: number): Macros {
+  const f = grams > 0 ? grams / 100 : 0;
+  return {
+    calories: round1(per100.kcal * f),
+    protein: round1(per100.protein * f),
+    carbs: round1(per100.carbs * f),
+    fat: round1(per100.fat * f),
+  };
 }
 
 export function sumMacros(items: Macros[]): Macros {

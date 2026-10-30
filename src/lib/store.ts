@@ -1,16 +1,23 @@
 import { useSyncExternalStore } from "react";
 import { format } from "date-fns";
-import type { Macros, MealType, Profile } from "./nutrition";
+import type { Macros, Profile } from "./nutrition";
 import { calcGoalCalories, macrosFromCalories } from "./nutrition";
 import { sortWeighIns, type WeighIn } from "./progress";
 
-export interface FoodEntry extends Macros {
+/**
+ * On-device state, used only before someone signs in:
+ * the setup quiz saves here, and the first login moves it into their account.
+ * Older versions of the app also kept the food log and weigh-ins here.
+ */
+
+/** Food entry as the on-device version of the app stored it. */
+export interface LegacyFoodEntry extends Macros {
   id: string;
   date: string; // yyyy-MM-dd (local)
-  meal: MealType;
+  meal: string; // "breakfast" | "lunch" | "dinner" | "snack" | "snacks"
   name: string;
   serving?: string | undefined;
-  barcode?: string | undefined; // reserved for the barcode scanner
+  barcode?: string | undefined;
   createdAt: number;
 }
 
@@ -32,14 +39,18 @@ export interface OnboardingState {
   aims: string[];
 }
 
-export interface AppState {
-  version: 1;
-  entries: FoodEntry[];
-  weights: WeightEntry[];
+/** Everything about a person that isn't the food log or weigh-ins. */
+export interface UserData {
   profile: Profile;
   targets: Macros;
   settings: Settings;
   onboarding: OnboardingState;
+}
+
+export interface AppState extends UserData {
+  version: 1;
+  entries: LegacyFoodEntry[];
+  weights: WeightEntry[];
 }
 
 const STORAGE_KEY = "forkcast:v1";
@@ -61,6 +72,13 @@ export const DEFAULT_STATE: AppState = {
   targets: macrosFromCalories(calcGoalCalories(defaultProfile)),
   settings: { name: "", units: "metric" },
   onboarding: { completed: false, obstacles: [], aims: [] },
+};
+
+export const DEFAULT_USER_DATA: UserData = {
+  profile: DEFAULT_STATE.profile,
+  targets: DEFAULT_STATE.targets,
+  settings: DEFAULT_STATE.settings,
+  onboarding: DEFAULT_STATE.onboarding,
 };
 
 let state: AppState = DEFAULT_STATE;
@@ -109,18 +127,22 @@ function getSnapshot() {
   return state;
 }
 
-// Server render + first hydration pass use defaults; the client then swaps in saved data.
 function getServerSnapshot() {
   return DEFAULT_STATE;
 }
 
-/** Current saved state, for effects that must not rely on the hydration snapshot. */
+/** Current on-device state, for effects that must not rely on the hydration snapshot. */
 export function getAppState(): AppState {
   return getSnapshot();
 }
 
 export function useAppState(): AppState {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
+/** True when this device holds anything worth moving into an account. */
+export function hasLocalData(s: AppState): boolean {
+  return s.onboarding.completed || s.entries.length > 0 || s.weights.length > 0;
 }
 
 export const todayKey = () => format(new Date(), "yyyy-MM-dd");
@@ -131,43 +153,8 @@ const uid = () =>
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-export const actions = {
-  addEntry(entry: Omit<FoodEntry, "id" | "createdAt">) {
-    setState((s) => ({
-      ...s,
-      entries: [...s.entries, { ...entry, id: uid(), createdAt: Date.now() }],
-    }));
-  },
-  removeEntry(id: string) {
-    setState((s) => ({ ...s, entries: s.entries.filter((e) => e.id !== id) }));
-  },
-  /** One weigh-in per day (re-logging replaces it); the latest also becomes the profile weight. */
-  logWeight(kg: number, date: string) {
-    setState((s) => {
-      const weights = sortWeighIns([
-        ...s.weights.filter((w) => w.date !== date),
-        { id: uid(), date, kg, createdAt: Date.now() },
-      ]);
-      return { ...s, weights, profile: { ...s.profile, weightKg: weights[weights.length - 1]!.kg } };
-    });
-  },
-  removeWeight(id: string) {
-    setState((s) => {
-      const weights = s.weights.filter((w) => w.id !== id);
-      const latest = weights[weights.length - 1];
-      return { ...s, weights, profile: latest ? { ...s.profile, weightKg: latest.kg } : s.profile };
-    });
-  },
-  updateProfile(patch: Partial<Profile>) {
-    setState((s) => ({ ...s, profile: { ...s.profile, ...patch } }));
-  },
-  setTargets(targets: Macros) {
-    setState((s) => ({ ...s, targets }));
-  },
-  updateSettings(patch: Partial<Settings>) {
-    setState((s) => ({ ...s, settings: { ...s.settings, ...patch } }));
-  },
-  /** Finish the setup quiz: save the profile, set matching targets and record the starting weigh-in. */
+export const localActions = {
+  /** Finish the setup quiz while signed out: keep the answers here until the first login. */
   completeOnboarding(input: {
     profile: Profile;
     name: string;
@@ -190,24 +177,13 @@ export const actions = {
       };
     });
   },
-  clearEntries() {
-    setState((s) => ({ ...s, entries: [] }));
-  },
-  resetAll() {
+  /** Forget everything on this device (after it has moved into an account). */
+  clear() {
     setState(() => DEFAULT_STATE);
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
   },
 };
-
-/** Most recent unique foods, for quick re-logging. */
-export function recentFoods(entries: FoodEntry[], limit = 6): FoodEntry[] {
-  const seen = new Set<string>();
-  const out: FoodEntry[] = [];
-  for (const e of [...entries].sort((a, b) => b.createdAt - a.createdAt)) {
-    const key = e.name.trim().toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(e);
-    if (out.length >= limit) break;
-  }
-  return out;
-}
