@@ -84,7 +84,7 @@ export function useDayEntries(date: string): LogEntry[] {
             .eq("user_id", uid)
             .eq("date", date)
             .order("created_at", { ascending: true }),
-        ).map(entryFromRow),
+        )?.map(entryFromRow) ?? [],
     }).data ?? []
   );
 }
@@ -107,7 +107,7 @@ export function useRecentDaysEntries(days: number): LogEntry[] {
             .gte("date", from)
             .lte("date", to)
             .order("created_at", { ascending: true }),
-        ).map(entryFromRow),
+        )?.map(entryFromRow) ?? [],
     }).data ?? []
   );
 }
@@ -127,7 +127,7 @@ export function useRecentFoods(limit = 6): LogEntry[] {
             .eq("user_id", uid)
             .order("created_at", { ascending: false })
             .limit(60),
-        ).map(entryFromRow),
+        )?.map(entryFromRow) ?? [],
     }).data ?? [];
   const seen = new Set<string>();
   const out: LogEntry[] = [];
@@ -173,7 +173,7 @@ export function useWeights(): WeightEntry[] {
             .select("*")
             .eq("user_id", uid)
             .order("date", { ascending: true }),
-        ).map(weightFromRow),
+        )?.map(weightFromRow) ?? [],
     }).data ?? []
   );
 }

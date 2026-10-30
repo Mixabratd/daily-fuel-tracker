@@ -14,9 +14,9 @@ import { getAppState } from "@/lib/store";
 type Mode = "signin" | "signup" | "forgot";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (s: Record<string, unknown>): { mode?: "signin" | "signup"; from?: "quiz" } => ({
-    mode: s.mode === "signin" || s.mode === "signup" ? s.mode : undefined,
-    from: s.from === "quiz" ? "quiz" : undefined,
+  validateSearch: (s: Record<string, unknown>): { mode?: "signin" | "signup" | undefined; from?: "quiz" | undefined } => ({
+    mode: s["mode"] === "signin" || s["mode"] === "signup" ? s["mode"] : undefined,
+    from: s["from"] === "quiz" ? "quiz" : undefined,
   }),
   head: () => ({
     meta: [
@@ -57,7 +57,10 @@ function AuthPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const addr = email.trim();
-    if (!addr) return toast.error("Enter your email");
+    if (!addr) {
+      toast.error("Enter your email");
+      return;
+    }
     setBusy(true);
     try {
       if (mode === "forgot") {
