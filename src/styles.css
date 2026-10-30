@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Fit Plate design system — dark mode: midnight navy base, dark blue ink panels, lime accent.
- * Macro colors: protein (coral), carbs (amber), fat (lagoon blue).
+ * Fit Plate design system — dark mode: near-black base, charcoal bordered cards, lime accent.
+ * Macro colors: protein (dusty coral), carbs (muted gold), fat (cool grey).
  * All colors use oklch.
  */
 
@@ -63,6 +63,55 @@
 
   --shadow-card: var(--shadow-card-value);
   --shadow-float: var(--shadow-float-value);
+}
+
+:root {
+  color-scheme: dark;
+  --radius: 1rem;
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.97 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.97 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.97 0 0);
+  --primary: oklch(0.86 0 0);
+  --primary-foreground: oklch(0.17 0 0);
+  --secondary: oklch(0.26 0 0);
+  --secondary-foreground: oklch(0.94 0 0);
+  --muted: oklch(0.25 0 0);
+  --muted-foreground: oklch(0.7 0 0);
+  --accent: oklch(0.89 0.17 122);
+  --accent-foreground: oklch(0.2 0.04 150);
+  --destructive: oklch(0.62 0.18 25);
+  --destructive-foreground: oklch(0.98 0.01 90);
+  --border: oklch(0.29 0 0);
+  --input: oklch(0.32 0 0);
+  --ring: oklch(0.89 0.17 122);
+
+  --ink: oklch(0.205 0 0);
+  --ink-foreground: oklch(0.97 0 0);
+  --track: oklch(0.29 0 0);
+  --protein: oklch(0.68 0.11 30);
+  --carbs: oklch(0.8 0.1 85);
+  --fat: oklch(0.72 0.02 270);
+
+  /* Cards and panels carry a hairline border, like the reference screens. */
+  --shadow-card-value: inset 0 0 0 1px oklch(1 0 0 / 8%);
+  --shadow-float-value: inset 0 0 0 1px oklch(1 0 0 / 8%), 0 12px 32px -12px oklch(0 0 0 / 60%);
+
+  --chart-1: var(--protein);
+  --chart-2: var(--carbs);
+  --chart-3: var(--fat);
+  --chart-4: oklch(0.89 0.17 122);
+  --chart-5: oklch(0.86 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.97 0 0);
+  --sidebar-primary: oklch(0.86 0 0);
+  --sidebar-primary-foreground: oklch(0.17 0 0);
+  --sidebar-accent: oklch(0.26 0 0);
+  --sidebar-accent-foreground: oklch(0.94 0 0);
+  --sidebar-border: oklch(0.29 0 0);
+  --sidebar-ring: oklch(0.89 0.17 122);
 }
 
 :root {

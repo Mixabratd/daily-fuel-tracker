@@ -34,7 +34,7 @@ import {
 import { actions, useAppState } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/settings/targets")({
+export const Route = createFileRoute("/_authenticated/settings/targets")({
   head: () => ({
     meta: [
       { title: "Targets & calculator — Fit Plate" },

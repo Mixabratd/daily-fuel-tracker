@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { MEALS, sumMacros, type MealType } from "@/lib/nutrition";
 import { todayKey, useAppState } from "@/lib/store";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "Today — Fit Plate" },

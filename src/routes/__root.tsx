@@ -4,9 +4,6 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
-  useRouterState,
-  useNavigate,
-  useHydrated,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
@@ -15,9 +12,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { BottomNav } from "@/components/app/BottomNav";
 import { Toaster } from "@/components/ui/sonner";
-import { getAppState, useAppState } from "@/lib/store";
+import { startAuthListener } from "@/lib/auth";
 
 function NotFoundComponent() {
   return (
@@ -84,7 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#0e1523" },
+      { name: "theme-color", content: "#0a0a0a" },
       { title: "Fit Plate — Calorie & macro tracker" },
       { name: "description", content: "Track daily calories and macros, log meals and set your targets." },
       { property: "og:title", content: "Fit Plate — Calorie & macro tracker" },
@@ -125,35 +121,23 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const navigate = useNavigate();
-  const hydrated = useHydrated();
-  const { onboarding } = useAppState();
-  const inQuiz = pathname.startsWith("/onboarding");
+  const router = useRouter();
 
-  // First launch (or after a reset): send people through the setup quiz.
-  // Reads the live store, not the hydration snapshot, so returning users aren't bounced.
-  useEffect(() => {
-    if (!inQuiz && !getAppState().onboarding.completed) {
-      void navigate({ to: "/onboarding", replace: true });
-    }
-  }, [inQuiz, onboarding.completed, navigate]);
-
-  const waitingForQuiz = hydrated && !inQuiz && !onboarding.completed;
+  // One auth listener for the whole app: refresh route checks and account data when someone signs in or out.
+  useEffect(
+    () =>
+      startAuthListener((event) => {
+        if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+        void router.invalidate();
+        if (event !== "SIGNED_OUT") void queryClient.invalidateQueries();
+      }),
+    [router, queryClient],
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
-      {inQuiz ? (
-        <Outlet />
-      ) : (
-        <>
-          <div className="mx-auto min-h-screen w-full max-w-md px-5 pb-32">
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            {waitingForQuiz ? null : <Outlet />}
-          </div>
-          {!waitingForQuiz && <BottomNav />}
-        </>
-      )}
+      {/* Required: nested routes render here. The signed-in app shell lives in _authenticated/route.tsx. */}
+      <Outlet />
       <Toaster position="top-center" />
     </QueryClientProvider>
   );
